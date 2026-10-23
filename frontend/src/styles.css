@@ -1,0 +1,52 @@
+/* Estilos basicos para las pantallas. */
+body { margin: 0; font-family: Arial, sans-serif; font-size: 14px; color: #222; background: white; }
+* { box-sizing: border-box; }
+header { display: flex; align-items: center; flex-wrap: wrap; gap: 24px; padding: 16px 24px; background: #eee; border-bottom: 1px solid #bbb; }
+a { color: #174f8c; }
+.marca { font-size: 20px; font-weight: bold; color: #222; text-decoration: none; }
+nav { display: flex; gap: 18px; flex-wrap: wrap; }
+nav a.activo { font-weight: bold; }
+.sesion { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+main { max-width: 1100px; margin: 0 auto; padding: 24px; }
+h1 { font-size: 24px; margin: 0 0 20px; }
+h2 { font-size: 18px; }
+p { line-height: 1.5; }
+button, .boton { display: inline-block; font: inherit; color: #222; background: #eee; border: 1px solid #999; border-radius: 2px; padding: 7px 12px; cursor: pointer; text-decoration: none; }
+button:hover, .boton:hover { background: #ddd; }
+button:disabled { color: #777; cursor: default; opacity: .6; }
+.peligro { color: #a02020; }
+input, select { width: 100%; min-width: 0; font: inherit; padding: 7px; border: 1px solid #999; border-radius: 2px; background: white; color: #222; }
+input:focus, select:focus, button:focus-visible, a:focus-visible { outline: 2px solid #174f8c; outline-offset: 2px; }
+label { display: flex; flex-direction: column; gap: 6px; }
+.login { max-width: 340px; margin: 40px auto; }
+.login form { display: grid; gap: 16px; }
+.login button { justify-self: start; }
+.busqueda { display: flex; align-items: end; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+.busqueda label { width: min(100%, 360px); }
+.tabla { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px; border: 1px solid #bbb; text-align: left; vertical-align: middle; }
+th { background: #eee; }
+.acciones { display: flex; gap: 6px; flex-wrap: wrap; }
+td.acciones { display: table-cell; min-width: 180px; }
+td.acciones button { margin: 2px; }
+.paginador, .titulo-fila { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.paginador { margin-top: 16px; }
+.paginador button + button { margin-left: 8px; }
+.panel { border: 1px solid #bbb; padding: 16px; margin: 20px 0; }
+.campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+.pestanas { display: flex; gap: 8px; margin: 20px 0; }
+.pestanas .seleccionado { background: #ccc; font-weight: bold; }
+.detalle { margin-top: 24px; }
+.detalle form { max-width: 440px; margin-top: 30px; padding-top: 12px; border-top: 1px solid #bbb; }
+.detalle form label { margin-bottom: 14px; }
+dt { font-weight: bold; margin-top: 12px; }
+dd { margin: 4px 0; }
+.error { color: #a02020; }
+.exito { color: #226322; }
+.vacio { margin: 20px 0; }
+@media (max-width: 650px) {
+  header, main { padding: 16px; }
+  .sesion { margin-left: 0; }
+  .campos { grid-template-columns: 1fr; }
+}

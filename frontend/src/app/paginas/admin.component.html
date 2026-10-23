@@ -1,0 +1,37 @@
+<h1>Administración</h1>
+<div class="pestanas"><button [class.seleccionado]="seccion === 'autores'" (click)="cambiar('autores')" [disabled]="ocupado">Autores</button><button [class.seleccionado]="seccion === 'libros'" (click)="cambiar('libros')" [disabled]="ocupado">Libros</button><button [class.seleccionado]="seccion === 'usuarios'" (click)="cambiar('usuarios')" [disabled]="ocupado">Usuarios</button></div>
+<p class="error" role="alert" *ngIf="error">{{ error }}</p><p class="exito" role="status" *ngIf="exito">{{ exito }}</p>
+<div class="titulo-fila"><h2>{{ seccion | titlecase }}</h2><button (click)="formulario()" [disabled]="ocupado">Crear registro</button></div>
+<form *ngIf="editando" #form="ngForm" (ngSubmit)="guardar()" class="panel">
+  <h2>{{ id ? 'Editar registro #' + id : 'Nuevo registro' }}</h2>
+  <div class="campos" *ngIf="seccion === 'autores'">
+    <label>Nombre<input name="nombre" [(ngModel)]="autor.nombre" required maxlength="80"></label>
+    <label>Apellido<input name="apellido" [(ngModel)]="autor.apellido" required maxlength="80"></label>
+    <label>Nacionalidad<input name="nacionalidad" [(ngModel)]="autor.nacionalidad" required maxlength="80"></label>
+    <label>Fecha de nacimiento<input type="date" name="nacimiento" [(ngModel)]="autor.fechaNacimiento" [max]="hoy" required></label>
+  </div>
+  <div class="campos" *ngIf="seccion === 'libros'">
+    <label>Título<input name="titulo" [(ngModel)]="libro.titulo" required maxlength="150"></label>
+    <label>ISBN<input name="isbn" [(ngModel)]="libro.isbn" required pattern="[0-9Xx-]{10,20}" placeholder="10 a 20 caracteres"></label>
+    <label>Año<input type="number" name="anio" [(ngModel)]="libro.anio" required min="1" max="2100"></label>
+    <label>Autor<select name="autorId" [(ngModel)]="libro.autorId" required><option [ngValue]="0" disabled>Selecciona un autor</option><option *ngFor="let autor of opcionesAutores" [ngValue]="autor.id">{{ autor.nombre }} {{ autor.apellido }}</option></select></label>
+    <p *ngIf="opcionesAutores.length === 0">Primero registra un autor en la pestaña Autores.</p>
+  </div>
+  <div class="campos" *ngIf="seccion === 'usuarios'">
+    <label>Nombre<input name="nombre" [(ngModel)]="usuario.nombre" required maxlength="100"></label>
+    <label>Usuario de acceso<input name="username" [(ngModel)]="usuario.username" required pattern="[a-zA-Z0-9_.-]{3,50}"></label>
+    <label>Correo<input type="email" email name="email" [(ngModel)]="usuario.email" required maxlength="120"></label>
+    <label>{{ id ? 'Nueva contraseña (vacía conserva la actual)' : 'Contraseña (mínimo 8 caracteres)' }}<input type="password" name="password" [(ngModel)]="usuario.password" [required]="!id" minlength="8" maxlength="72" autocomplete="new-password"></label>
+    <label>Rol<select name="rol" [(ngModel)]="usuario.rol"><option value="LECTOR">LECTOR</option><option value="ADMIN">ADMIN</option></select></label>
+    <label>Estado<select name="estado" [(ngModel)]="usuario.estado"><option value="ACTIVO">ACTIVO</option><option value="INACTIVO">INACTIVO</option></select></label>
+  </div>
+  <div class="acciones"><button [disabled]="form.invalid || ocupado || (seccion === 'libros' && !libro.autorId)">Guardar</button><button type="button" class="secundario" (click)="editando = false">Cancelar</button></div>
+</form>
+<form class="busqueda" (ngSubmit)="cargar(0)"><label>{{ seccion === 'libros' ? 'Buscar por título o autor' : seccion === 'autores' ? 'Buscar por nombre o apellido' : 'Buscar por nombre o usuario' }}<input name="q" [(ngModel)]="q"></label><button [disabled]="ocupado">Buscar</button></form>
+<div class="tabla">
+  <table *ngIf="seccion === 'autores'"><thead><tr><th>ID</th><th>Nombre</th><th>Nacionalidad</th><th>Nacimiento</th><th>Acciones</th></tr></thead><tbody><tr *ngFor="let autor of autores"><td>{{ autor.id }}</td><td>{{ autor.nombre }} {{ autor.apellido }}</td><td>{{ autor.nacionalidad }}</td><td>{{ autor.fechaNacimiento | date:'dd/MM/yyyy' }}</td><td class="acciones"><button class="secundario" (click)="formulario(autor.id)" [disabled]="ocupado">Editar</button><button class="peligro" (click)="eliminar(autor.id)" [disabled]="ocupado">Eliminar</button></td></tr></tbody></table>
+  <table *ngIf="seccion === 'libros'"><thead><tr><th>ID</th><th>Título</th><th>ISBN</th><th>Año</th><th>Autor</th><th>Acciones</th></tr></thead><tbody><tr *ngFor="let libro of libros"><td>{{ libro.id }}</td><td>{{ libro.titulo }}</td><td>{{ libro.isbn }}</td><td>{{ libro.anio }}</td><td>{{ libro.autor.nombre }} {{ libro.autor.apellido }}</td><td class="acciones"><button class="secundario" (click)="formulario(libro.id)" [disabled]="ocupado">Editar</button><button class="peligro" (click)="eliminar(libro.id)" [disabled]="ocupado">Eliminar</button></td></tr></tbody></table>
+  <table *ngIf="seccion === 'usuarios'"><thead><tr><th>ID</th><th>Nombre</th><th>Usuario</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead><tbody><tr *ngFor="let usuario of usuarios"><td>{{ usuario.id }}</td><td>{{ usuario.nombre }}</td><td>{{ usuario.username }}</td><td>{{ usuario.email }}</td><td>{{ usuario.rol }}</td><td>{{ usuario.estado }}</td><td class="acciones"><button class="secundario" (click)="formulario(usuario.id)" [disabled]="ocupado">Editar</button><button class="peligro" (click)="eliminar(usuario.id)" [disabled]="ocupado">Eliminar</button></td></tr></tbody></table>
+</div>
+<p *ngIf="ocupado">Cargando...</p><p class="vacio" *ngIf="!ocupado && !error && total === 0">No hay registros. Puedes crear uno con el botón Crear registro.</p>
+<app-paginador [pagina]="pagina" [paginas]="paginas" [total]="total" [ocupado]="ocupado" (cambio)="cargar($event)" />

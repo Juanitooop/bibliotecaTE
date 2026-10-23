@@ -1,0 +1,18 @@
+<div class="titulo-fila"><div><h1>Préstamos</h1><p>Registra, consulta, edita y elimina préstamos.</p></div><button (click)="formulario()" [disabled]="ocupado">Registrar préstamo</button></div>
+<p class="error" role="alert" *ngIf="error">{{ error }}</p><p class="exito" role="status" *ngIf="exito">{{ exito }}</p>
+<form *ngIf="editando" #form="ngForm" (ngSubmit)="guardar()" class="panel">
+  <h2>{{ id ? 'Editar préstamo #' + id : 'Registrar préstamo' }}</h2>
+  <div class="campos">
+    <label>Libro<select name="libro" [(ngModel)]="datos.libroId" required><option [ngValue]="0" disabled>Selecciona un libro</option><option *ngFor="let libro of libros" [ngValue]="libro.id">{{ libro.titulo }}</option></select></label>
+    <label>Lector<select name="usuario" [(ngModel)]="datos.usuarioId" required><option [ngValue]="0" disabled>Selecciona un lector</option><option *ngFor="let usuario of usuarios" [ngValue]="usuario.id">{{ usuario.nombre }} ({{ usuario.username }}) · {{ usuario.estado }}</option></select></label>
+    <label>Fecha de préstamo<input type="date" name="inicio" [(ngModel)]="datos.fechaPrestamo" [max]="hoy" required></label>
+    <label>Fecha prevista de devolución<input type="date" name="fin" [(ngModel)]="datos.fechaDevolucion" [min]="datos.fechaPrestamo" required></label>
+    <label>Estado<select name="devuelto" [(ngModel)]="datos.devuelto"><option [ngValue]="false">Pendiente</option><option [ngValue]="true">Devuelto</option></select></label>
+  </div>
+  <div class="acciones"><button [disabled]="form.invalid || ocupado || !datos.libroId || !datos.usuarioId">Guardar</button><button type="button" class="secundario" (click)="editando = false">Cancelar</button></div>
+</form>
+<section class="panel" *ngIf="detalle"><div class="titulo-fila"><h2>Detalle del préstamo #{{ detalle.id }}</h2><button class="secundario" (click)="detalle = null">Cerrar detalle</button></div><p><strong>Libro:</strong> {{ detalle.libro.titulo }}</p><p><strong>Lector:</strong> {{ detalle.usuario.nombre }} ({{ detalle.usuario.username }})</p><p><strong>Préstamo:</strong> {{ detalle.fechaPrestamo | date:'dd/MM/yyyy' }} · <strong>Devolución prevista:</strong> {{ detalle.fechaDevolucion | date:'dd/MM/yyyy' }}</p><p><strong>Estado:</strong> {{ detalle.devuelto ? 'Devuelto' : 'Pendiente' }}</p></section>
+<form class="busqueda" (ngSubmit)="cargar(0)"><label>Buscar por libro, autor o usuario<input name="q" [(ngModel)]="q"></label><button [disabled]="ocupado">Buscar</button></form>
+<div class="tabla"><table><thead><tr><th>ID</th><th>Libro</th><th>Lector</th><th>Préstamo</th><th>Devolución prevista</th><th>Estado</th><th>Acciones</th></tr></thead><tbody><tr *ngFor="let prestamo of prestamos"><td>{{ prestamo.id }}</td><td>{{ prestamo.libro.titulo }}</td><td>{{ prestamo.usuario.nombre }}</td><td>{{ prestamo.fechaPrestamo | date:'dd/MM/yyyy' }}</td><td>{{ prestamo.fechaDevolucion | date:'dd/MM/yyyy' }}</td><td><span class="estado" [class.pendiente]="!prestamo.devuelto">{{ prestamo.devuelto ? 'Devuelto' : 'Pendiente' }}</span></td><td class="acciones"><button class="secundario" (click)="ver(prestamo.id)" [disabled]="ocupado">Ver</button><button class="secundario" (click)="formulario(prestamo)" [disabled]="ocupado">Editar</button><button class="peligro" (click)="eliminar(prestamo)" [disabled]="ocupado">Eliminar</button></td></tr></tbody></table></div>
+<p *ngIf="ocupado">Cargando...</p><p class="vacio" *ngIf="!ocupado && !error && prestamos.length === 0">No hay préstamos para mostrar.</p>
+<app-paginador [pagina]="pagina" [paginas]="paginas" [total]="total" [ocupado]="ocupado" (cambio)="cargar($event)" />
